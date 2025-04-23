@@ -1,0 +1,99 @@
+.fa-compass{
+    color: #fe424d;
+    font-size: 2rem;
+}
+body{
+    font-family: "Plus Jakarta Sans", sans-serif !important;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+.container{
+    flex:1;
+}
+
+/* navbar */
+.navbar{
+    height: 5rem;
+    background-color: white;
+}
+.nav-link{
+    color:#222 !important;
+}
+/* Footer */
+.footer{
+    background-color: #ebebeb;
+    width:100% !important;
+    padding: 2rem 0;
+}
+.f-info-links a{
+    text-decoration: none;
+    color:#222;
+}
+
+.f-info-links a:hover{
+    text-decoration:underline;
+}
+.f-info-socials,.f-info-links,.f-info-brands{
+    width:100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.f-info-socials i{
+    font-size: 1.2rem;
+    margin-right: 1rem;
+}
+
+.f-info{
+    text-align: center;
+    display: flex;
+    background-color: #ebebeb;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items:space-evenly;
+}
+
+
+/* index */
+.card{
+    offset: 3 !important;
+    border:none;
+    margin-bottom: 2rem;
+    
+}
+.card-text{
+    color: #222;
+}
+.card-img-top{
+    border-radius: 1rem !important;
+    width:100% !important;
+    object-fit: cover;
+}
+.card-body{
+    padding:0;
+    font-weight: 400;
+}
+
+.card-link{
+    text-decoration: none;
+}
+/* clickable-effect */
+.card-img-overlay{
+    opacity: 0;
+}
+.card-img-overlay:hover{
+    opacity:0.2;
+    background-color: white;
+}
+/* for button */
+.add-btn,.edit-btn{
+    background-color: #fe424d;
+    border: none;
+}
+.btns{
+    display: flex;
+}
+.show-img{
+    height: 30vh;
+}

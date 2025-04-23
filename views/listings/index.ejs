@@ -1,0 +1,36 @@
+<% layout("/layouts/boilerplate") %>
+<body style:"margin-left:1rem;">
+    <!-- <form method="GET" action="/listings/new">
+        <button>
+            create new Villa page 
+        </button>
+    </form> -->
+    <div class="left">
+    <h3>allListing</h3>
+    <div class="row row-cols-lg-3 row-cols-md-3 row-cols-sm-1">
+    <%for(let list of listin){%>
+        <a href="/listings/<%=list._id%>" class="card-link">
+        <div class="card col" >
+            <img src="<%=list.image%>" class="card-img-top" alt="listing_image" style="height: 20rem;">
+            <div class="card-img-overlay">abcd</div>
+            <div class="card-body">
+                <p class="card-text"><b><%=list.title%></b><br>
+                    &#8377;<%=list.price.toLocaleString("en-IN")%>/-night
+                </p>
+            </div>
+        </div>
+    </a>
+    <%}%>
+</div>
+</div>
+    <!-- <ul>
+        <%for(let list of listin){%>
+            <li><a href="/listings/<%=list._id%>"></a></li>
+        <%}%>
+    </ul> -->
+
+
+
+
+
+</body>
