@@ -56,7 +56,7 @@ body{
 
 
 /* index */
-.card{
+.listing-card{
     offset: 3 !important;
     border:none;
     margin-bottom: 2rem;
