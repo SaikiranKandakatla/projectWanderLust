@@ -4,19 +4,25 @@ let ejsMate=require("ejs-mate");
 app.engine("ejs",ejsMate);
 let mongoose=require("mongoose");
 let mo=require("method-override");
-const {ListingSchema,reviewSchema}=require("./Schema.js");
-const wrapAsync=require("./utils/WrapAsync.js");
-const ExpressError=require("./utils/ExpressError.js");
-app.use(mo("_method"));
 let path=require("path");
-app.engine("ejs",ejsMate);
+const session=require("express-session");
+const flash=require("connect-flash");
+const ExpressError=require("./utils/ExpressError.js");
+const listing=require("./routes/listing.js");
+const review=require("./routes/review.js");
+app.use(mo("_method"));
 app.use(express.static(path.join(__dirname,"public")));
 app.use(express.urlencoded({extended:true}))
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"))
 //Mongoose connections--backend database connection
-let listings=require("./models/listings");
-let Reviews=require("./models/review.js")
+const sessionOptions={
+    secret:"mysecretsuperKey",
+    resave:false,
+    saveUninitialized:true,
+    cookie: {expires:Date.now()+1000*60*60*24*3,maxAge: 1000*60*60*24*3, httpOnly: true }
+}
+
 let Mongo_Url="mongodb://127.0.0.1:27017/listings";
 main().then(()=>{
     console.log("The database connection has setUp succesfully");
@@ -27,94 +33,24 @@ async function main(){
     await mongoose.connect(Mongo_Url);
 }
 
-let ValidateListing=(req,res,next)=>{
-    let {error}=ListingSchema.validate(req.body);
-    if(error){
-        let ErrMsg=error.details.map(el=>el.message).join(",");
-        throw new ExpressError(400,ErrMsg);
-    }else{
-        next();
-    }
-}
-let Validatereview=(req,res,next)=>{
-    let {error}=reviewSchema.validate(req.body);
-    if(error){
-        let ErrMsg=error.details.map(el=>el.message).join(",");
-        throw new ExpressError(400,ErrMsg);
-    }else{
-        next();
-    }
-}
+
 
 // //home root
-// app.get("/",(req,res)=>{
-//     res.send("This is root");
-// });
-//home Page
-app.get("/listings",wrapAsync(async(req,res)=>{
-    let listin=await listings.find({});
-    res.render("listings/index.ejs",{listin});
-}));
+app.get("/",(req,res)=>{
+    res.send("This is root");
+});
+app.use(session(sessionOptions))
+app.use(flash());
 
-//create new page
-app.get("/listings/new",wrapAsync(async(req,res)=>{
-    res.render("listings/create.ejs");
-}));
+app.use((req,res,next)=>{
+    res.locals.success=req.flash("success");
+    res.locals.error=req.flash("error");
+    next();
+})
 
-//show route
+app.use("/listings",listing);
+app.use("/listings/:id/reviews",review);
 
-app.get("/listings/:id",wrapAsync(async(req,res)=>{
-    let {id}=req.params;
-    let listin=await listings.findById(id).populate("reviews");
-    res.render("listings/show.ejs",{listin});
-}));
-//editing
-app.get("/listings/:id/edit",wrapAsync(async(req,res)=>{
-    let {id}=req.params;
-    let listin=await listings.findById(id);
-    res.render("listings/edit.ejs",{listin});
-}));
-
-app.put("/listings/:id",ValidateListing,wrapAsync(async(req,res)=>{
-    let {id}=req.params;
-    await listings.findByIdAndUpdate(id,req.body.listing);
-    res.redirect("/listings");
-}));
-//create new page
-app.post("/listings",ValidateListing,wrapAsync(async(req,res,next)=>{
-    let listin=req.body.listing;
-    let user=await new listings(listin)
-    await user.save();
-    res.redirect("/listings");
-    
-}));
-//for reviews we use this
-app.post("/listings/:id/reviews",Validatereview,wrapAsync(async(req,res)=>{
-    let {id}=req.params;
-    let listin=await listings.findById(id);
-    let newreview=new Reviews(req.body.reviews);
-    listin.reviews.push(newreview);
-    await newreview.save();
-    await listin.save();
-    res.redirect(`/listings/${id}`)
-    
-}))
-
-//delete reviews
-app.delete("/listings/:id/reviews/:reviewId",wrapAsync(async(req,res)=>{
-    let { id, reviewId }=req.params;
-    await listings.findByIdAndUpdate(id,{$pull: { reviews:reviewId } });
-    await Reviews.findByIdAndDelete(reviewId);
-    res.redirect(`/listings/${id}`)
-
-}));
-//delete
-app.delete("/listings/:id",wrapAsync(async(req,res)=>{
-    let {id}=req.params;
-    let listin=await listings.findByIdAndDelete(id);
-    console.log(listin);
-    res.redirect("/listings");
-}));
 
 //show page
 app.all(/(.*)/, (req,res,next)=>{
