@@ -7,9 +7,14 @@ let mo=require("method-override");
 let path=require("path");
 const session=require("express-session");
 const flash=require("connect-flash");
+const user=require("./models/user.js");
+const passport=require("passport");
+const localStrategy=require("passport-local");
 const ExpressError=require("./utils/ExpressError.js");
 const listing=require("./routes/listing.js");
 const review=require("./routes/review.js");
+const userrouter=require("./routes/User.js");
+const loggedIn=require("./middleware.js");
 app.use(mo("_method"));
 app.use(express.static(path.join(__dirname,"public")));
 app.use(express.urlencoded({extended:true}))
@@ -41,16 +46,34 @@ app.get("/",(req,res)=>{
 });
 app.use(session(sessionOptions))
 app.use(flash());
+app.use(passport.initialize());
+app.use(passport.session());// line 48 49 is used for intilize passport for every route
+passport.use(new localStrategy(user.authenticate()));//connecting passport in user strategy
+passport.serializeUser(user.serializeUser());//shows how to store foramt
+passport.deserializeUser(user.deserializeUser());// show how retrieves the stored data
+
+
 
 app.use((req,res,next)=>{
     res.locals.success=req.flash("success");
     res.locals.error=req.flash("error");
+    res.locals.currentuser=req.user;
     next();
 })
 
 app.use("/listings",listing);
 app.use("/listings/:id/reviews",review);
+app.use("/",userrouter);
+// app.get("/demoUser",(req,res)=>{
+//     const user1=new user({
+//         email:"saikiran@gmail.com",
+//         username:"Saikiran"
+//     })
 
+//     user.register(user1,"saikiran");
+//     console.log(user1);
+//     res.send("the user register successfully")
+// })
 
 //show page
 app.all(/(.*)/, (req,res,next)=>{

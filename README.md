@@ -10,3 +10,4 @@ the classroom is not included in this project
 
 # added express session to create id and store temporary data in form cookies 
 # added flash success and failure using connect-flash
+# added login functionality by passport ,passport-local strategy and passport-local-mongoose

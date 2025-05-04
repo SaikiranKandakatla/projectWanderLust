@@ -5,6 +5,7 @@ const {ListingSchema}=require("../Schema.js");
 const wrapAsync=require("../utils/WrapAsync.js");
 const ExpressError=require("../utils/ExpressError.js");
 let listings=require("../models/listings");
+const loggedIn=require("../middleware.js");
 const session = require("express-session");
 let ValidateListing=(req,res,next)=>{
     let {error}=ListingSchema.validate(req.body);
@@ -22,12 +23,12 @@ router.get("/",wrapAsync(async(req,res)=>{
 }));
 
 //create new page
-router.get("/new",wrapAsync(async(req,res)=>{
+router.get("/new",loggedIn,(req,res)=>{
     res.render("listings/create.ejs");
-}));
+});
 
 //show route
-router.get("/:id",wrapAsync(async(req,res)=>{
+router.get("/:id",loggedIn,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     const listin=await listings.findById(id).populate("reviews");
     if(!listin){
@@ -37,7 +38,7 @@ router.get("/:id",wrapAsync(async(req,res)=>{
     res.render("listings/show.ejs",{listin});
 }));
 //editing
-router.get("/:id/edit",wrapAsync(async(req,res)=>{
+router.get("/:id/edit",loggedIn,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     let listin=await listings.findById(id);
     if(!listin){
@@ -47,14 +48,14 @@ router.get("/:id/edit",wrapAsync(async(req,res)=>{
     res.render("listings/edit.ejs",{listin});
 }));
 
-router.put("/:id",ValidateListing,wrapAsync(async(req,res)=>{
+router.put("/:id",loggedIn,ValidateListing,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     await listings.findByIdAndUpdate(id,req.body.listing);
     req.flash("success","Listing is updated Successfully!!");
     res.redirect("/listings");
 }));
 //create new page
-router.post("/",ValidateListing,wrapAsync(async(req,res,next)=>{
+router.post("/",loggedIn,ValidateListing,wrapAsync(async(req,res,next)=>{
     let listin=req.body.listing;
     let user=await new listings(listin)
     await user.save();
@@ -63,7 +64,7 @@ router.post("/",ValidateListing,wrapAsync(async(req,res,next)=>{
     
 }));
 //delete
-router.delete("/:id",wrapAsync(async(req,res)=>{
+router.delete("/:id",loggedIn,wrapAsync(async(req,res)=>{
     let {id}=req.params;
     let listin=await listings.findByIdAndDelete(id);
     console.log(listin);
