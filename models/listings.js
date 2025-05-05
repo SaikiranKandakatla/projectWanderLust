@@ -35,7 +35,11 @@ let newSchema=new Schema(
                 type:Schema.Types.ObjectId,
                 ref:"review"
             }
-        ]
+        ],
+        owner:{
+            type:Schema.Types.ObjectId,
+            ref:"User"
+        }
             
         
     }

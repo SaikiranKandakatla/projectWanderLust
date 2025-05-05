@@ -13,6 +13,7 @@ async function main(){
 
 async function init(){
     await newListings.deleteMany({});
+    datainput.data=datainput.data.map((ele)=>({...ele,owner:"6817a9320d9b7a2639642b64"}));
     let data=await newListings.insertMany(datainput.data);
     console.log("the data is inserted successfulloy");
 };
