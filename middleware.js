@@ -31,7 +31,7 @@ module.exports.isReviewOwner=async(req,res,next)=>{
     let {id,reviewId}=req.params;
     const listin=await Reviews.findById(reviewId);
     if(!listin.author.equals(res.locals.currentuser._id)){
-        req.flash("error","you are not autorize to use this page");
+        req.flash("error","you are not autorize delete this review");
         return res.redirect(`/listings/${id}`);
     }
     next();

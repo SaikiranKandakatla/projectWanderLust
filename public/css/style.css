@@ -97,3 +97,9 @@ body{
 .show-img{
     height: 30vh;
 }
+
+#map{
+    width: 80vh; height: 400px;
+    margin-bottom: 20px;
+    cursor:grab;
+}

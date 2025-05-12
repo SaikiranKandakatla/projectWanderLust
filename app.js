@@ -1,3 +1,8 @@
+if(process.env.NODE_ENV!="production"){
+    require("dotenv").config();
+}
+
+
 let express=require("express");
 let app=express();
 let ejsMate=require("ejs-mate");
@@ -6,6 +11,7 @@ let mongoose=require("mongoose");
 let mo=require("method-override");
 let path=require("path");
 const session=require("express-session");
+const Mangostore=require("connect-mongo");
 const flash=require("connect-flash");
 const user=require("./models/user.js");
 const passport=require("passport");
@@ -15,20 +21,35 @@ const listing=require("./routes/listing.js");
 const review=require("./routes/review.js");
 const userrouter=require("./routes/User.js");
 const loggedIn=require("./middleware.js");
+const multer=require("multer");
+const MongoStore = require("connect-mongo");
+const upload=multer({dest:"uploads/"});
+
 app.use(mo("_method"));
 app.use(express.static(path.join(__dirname,"public")));
 app.use(express.urlencoded({extended:true}))
+app.use(express.json());
 app.set("view engine","ejs");
 app.set("views",path.join(__dirname,"views"))
+let Mongo_Url=process.env.dburl;
 //Mongoose connections--backend database connection
+const store=MongoStore.create({
+    mongoUrl:Mongo_Url,
+    crypto:{
+        secret:"mysecretsuperKey"
+    },
+    touchAfter:24*3600
+})
 const sessionOptions={
+    store,
     secret:"mysecretsuperKey",
     resave:false,
     saveUninitialized:true,
     cookie: {expires:Date.now()+1000*60*60*24*3,maxAge: 1000*60*60*24*3, httpOnly: true }
 }
 
-let Mongo_Url="mongodb://127.0.0.1:27017/listings";
+// let Mongo_Url="mongodb://127.0.0.1:27017/listings";
+
 main().then(()=>{
     console.log("The database connection has setUp succesfully");
 }).catch((err)=>{

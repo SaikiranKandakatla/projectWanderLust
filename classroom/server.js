@@ -14,6 +14,7 @@ app.use("/posts",posts)
 
 
 
+
 app.listen(8080,()=>{
     console.log("the sever is started at port 8080")
 })
