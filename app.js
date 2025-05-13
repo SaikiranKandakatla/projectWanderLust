@@ -36,13 +36,13 @@ let Mongo_Url=process.env.dburl;
 const store=MongoStore.create({
     mongoUrl:Mongo_Url,
     crypto:{
-        secret:"mysecretsuperKey"
+        secret:process.env.secret
     },
     touchAfter:24*3600
 })
 const sessionOptions={
     store,
-    secret:"mysecretsuperKey",
+    secret:process.env.secret,
     resave:false,
     saveUninitialized:true,
     cookie: {expires:Date.now()+1000*60*60*24*3,maxAge: 1000*60*60*24*3, httpOnly: true }
